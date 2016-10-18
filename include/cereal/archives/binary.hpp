@@ -57,7 +57,7 @@ namespace cereal
       BinaryOutputArchive(std::ostream & stream) :
         OutputArchive<BinaryOutputArchive, AllowEmptyClassElision>(this),
         itsStream(stream),
-        binarySize(new int())
+        binarySize(new std::size_t())
       { }
 
       ~BinaryOutputArchive() CEREAL_NOEXCEPT = default;
