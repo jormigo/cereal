@@ -138,10 +138,10 @@ namespace cereal
         {
           for( std::size_t i = 0; i < size; i += DataSize )
             for( std::size_t j = 0; j < DataSize; ++j )
-              writtenSize += static_cast<std::size_t>( itsStream..rdbuf()->sputn( reinterpret_cast<const char*>( data ) + DataSize - j - 1 + i, 1 ) );
+              writtenSize += static_cast<std::size_t>( itsStream.rdbuf()->sputn( reinterpret_cast<const char*>( data ) + DataSize - j - 1 + i, 1 ) );
         }
         else
-          writtenSize = static_cast<std::size_t>( itsStream..rdbuf()->sputn( reinterpret_cast<const char*>( data ), size ) );
+          writtenSize = static_cast<std::size_t>( itsStream.rdbuf()->sputn( reinterpret_cast<const char*>( data ), size ) );
 
         *binarySize += writtenSize;
 
@@ -248,7 +248,7 @@ namespace cereal
       void loadBinary( void * const data, std::size_t size )
       {
         // load data
-        auto const readSize = static_cast<std::size_t>( itsStream.read( reinterpret_cast<char*>( data ), size ) );
+        auto const readSize = static_cast<std::size_t>( itsStream.rdbuf()->sgetn( reinterpret_cast<char*>( data ), size ) );
 
         if(readSize != size)
           throw Exception("Failed to read " + std::to_string(size) + " bytes from input stream! Read " + std::to_string(readSize));
