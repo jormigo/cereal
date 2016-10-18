@@ -120,7 +120,7 @@ namespace cereal
       PortableBinaryOutputArchive(std::ostream & stream, Options const & options = Options::Default()) :
         OutputArchive<PortableBinaryOutputArchive, AllowEmptyClassElision>(this),
         itsStream(stream),
-        binarySize(new int(static_cast<std::size_t>(0)),
+        binarySize(new int(static_cast<std::size_t>(0))),
         itsConvertEndianness( portable_binary_detail::is_little_endian() ^ options.is_little_endian() )
       {
         this->operator()( options.is_little_endian() );
