@@ -120,6 +120,7 @@ namespace cereal
       PortableBinaryOutputArchive(std::ostream & stream, Options const & options = Options::Default()) :
         OutputArchive<PortableBinaryOutputArchive, AllowEmptyClassElision>(this),
         itsStream(stream),
+        binarySize(new int(0)),
         itsConvertEndianness( portable_binary_detail::is_little_endian() ^ options.is_little_endian() )
       {
         this->operator()( options.is_little_endian() );
@@ -137,17 +138,25 @@ namespace cereal
         {
           for( std::size_t i = 0; i < size; i += DataSize )
             for( std::size_t j = 0; j < DataSize; ++j )
-              writtenSize += static_cast<std::size_t>( itsStream.write( reinterpret_cast<const char*>( data ) + DataSize - j - 1 + i, 1 ) );
+              writtenSize += static_cast<std::size_t>( itsStream..rdbuf()->sputn( reinterpret_cast<const char*>( data ) + DataSize - j - 1 + i, 1 ) );
         }
         else
-          writtenSize = static_cast<std::size_t>( itsStream.write( reinterpret_cast<const char*>( data ), size ) );
+          writtenSize = static_cast<std::size_t>( itsStream..rdbuf()->sputn( reinterpret_cast<const char*>( data ), size ) );
+
+        *binarySize += writtenSize;
 
         if(writtenSize != size)
           throw Exception("Failed to write " + std::to_string(size) + " bytes to output stream! Wrote " + std::to_string(writtenSize));
       }
 
+      std::shared_ptr<std::size_t> getObjectSizeSharedPtr()
+      {
+        return binarySize;
+      }
+
     private:
       std::ostream & itsStream;
+      std::shared_ptr<std::size_t> binarySize;
       const uint8_t itsConvertEndianness; //!< If set to true, we will need to swap bytes upon saving
   };
 

@@ -56,7 +56,8 @@ namespace cereal
                         even cout! */
       BinaryOutputArchive(std::ostream & stream) :
         OutputArchive<BinaryOutputArchive, AllowEmptyClassElision>(this),
-        itsStream(stream)
+        itsStream(stream),
+        binarySize(new int(0))
       { }
 
       ~BinaryOutputArchive() CEREAL_NOEXCEPT = default;
@@ -64,14 +65,20 @@ namespace cereal
       //! Writes size bytes of data to the output stream
       void saveBinary( const void * data, std::size_t size )
       {
-        auto const writtenSize = static_cast<std::size_t>( itsStream.write( reinterpret_cast<const char*>( data ), size ) );
-
+        auto const writtenSize = static_cast<std::size_t>( itsStream..rdbuf()->sputn( reinterpret_cast<const char*>( data ), size ) );
+        *binarySize += writtenSize;
         if(writtenSize != size)
           throw Exception("Failed to write " + std::to_string(size) + " bytes to output stream! Wrote " + std::to_string(writtenSize));
       }
 
+      std::shared_ptr<std::size_t> getObjectSizeSharedPtr()
+      {
+        return binarySize;
+      }
+
     private:
       std::ostream & itsStream;
+      std::shared_ptr<std::size_t> binarySize;
   };
 
   // ######################################################################
